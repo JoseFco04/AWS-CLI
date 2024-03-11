@@ -26,7 +26,7 @@ aws ec2 terminate-instances --instance-ids $INSTANCE_ID_lb
 #BORRAMOS FORNTEND_1
 #Sacamos el id
 INSTANCE_ID_fr1=$(aws ec2 describe-instances \
-            --filters "Name=tag:Name,Values=$INSTANCE_NAME_FRONTEND_1" \
+            --filters "Name=tag:Name,Values=$INSTANCE_NAME_FRONTEND" \
                       "Name=instance-state-name,Values=running" \
             --query "Reservations[*].Instances[*].InstanceId" \
             --output text)
