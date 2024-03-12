@@ -325,5 +325,64 @@ aws ec2 terminate-instances --instance-ids $INSTANCE_ID_bk
 ~~~
 ##### Y por último tenemos el script para eliminar los grupos de seguridad, que se nos debería ver así:
 ~~~
+#!/bin/bash
+set -x
 
+# Deshabilitamos la paginación de la salida de los comandos de AWS CLI
+# Referencia: https://docs.aws.amazon.com/es_es/cli/latest/userguide/cliv2-migration.html#cliv2-migration-output-pager
+export AWS_PAGER=""
+
+# Importamos las variables de entorno
+source .env
+
+#Buscamos el id del grupo del load balancer
+
+ID_GRUPO_lb=$(aws ec2 describe-security-groups \
+            --group-names $SECURITY_GROUP_LOAD_BALANCER \
+            --query "SecurityGroups[*].GroupId" \
+            --output text)
+
+#Borramos el grupo de seguridad load balancer
+
+aws ec2 delete-security-groups --group-ids $ID_GRUPO_lb
+
+#Buscamos el id del grupo del load frontend
+
+ID_GRUPO_f=$(aws ec2 describe-security-groups \
+            --group-names $SECURITY_GROUP_FRONTEND \
+            --query "SecurityGroups[*].GroupId" \
+            --output text)
+
+#Borramos el grupo de seguridad load balancer
+
+aws ec2 delete-security-groups --group-ids $ID_GRUPO_f
+
+#Buscamos el id del grupo del load balancer
+
+ID_GRUPO_b=$(aws ec2 describe-security-groups \
+            --group-names $SECURITY_GROUP_LOAD_BALANCER \
+            --query "SecurityGroups[*].GroupId" \
+            --output text)
+
+#Borramos el grupo de seguridad load balancer
+
+aws ec2 delete-security-groups --group-ids $ID_GRUPO_b
+~~~
+#### Las ips no las tenemos que borrar ya que se borran solas cuando eliminamos las instancias.
+#### Y por último el .env donde he guardado las variables.
+~~~
+AMI_ID=ami-07d9b9ddc6cd8dd30
+COUNT=1
+INSTANCE_TYPE=t2.small
+KEY_NAME=vockey
+
+SECURITY_GROUP_LOAD_BALANCER=loadbalancer-sg
+SECURITY_GROUP_FRONTEND=frontend-sg
+SECURITY_GROUP_NFS=nfs-sg
+SECURITY_GROUP_BACKEND=backend-sg
+
+INSTANCE_NAME_LOAD_BALANCER=load_balancer
+INSTANCE_NAME_FRONTEND=frontend_1
+INSTANCE_NAME_NFSERVER=NFSserver
+INSTANCE_NAME_BACKEND=backend
 ~~~
